@@ -1,0 +1,47 @@
+{
+  "name": "ai-council",
+  "version": "0.1.0",
+  "private": true,
+  "description": "AI Council Portal - Multi-agent AI collaboration platform",
+  "workspaces": [
+    "apps/*",
+    "packages/*"
+  ],
+  "scripts": {
+    "dev": "turbo run dev",
+    "build": "turbo run build",
+    "lint": "turbo run lint",
+    "clean": "turbo run clean",
+    "type-check": "turbo run type-check",
+    "checkpoint:save": "node scripts/checkpoint.js save",
+    "checkpoint:list": "node scripts/checkpoint.js list",
+    "checkpoint:restore": "node scripts/checkpoint.js restore",
+    "error:log": "node scripts/error-tracker.js log",
+    "error:search": "node scripts/error-tracker.js search",
+    "error:solve": "node scripts/error-tracker.js solve",
+    "deps:check": "node scripts/deps-check.js check",
+    "deps:install": "node scripts/deps-check.js install",
+    "deps:clean": "node scripts/deps-check.js clean",
+    "validate:all": "node scripts/validate.js all",
+    "validate:api": "node scripts/validate.js api",
+    "validate:web": "node scripts/validate.js web",
+    "progress:update": "node scripts/progress-tracker.js update",
+    "progress:report": "node scripts/progress-tracker.js report",
+    "progress:timeline": "node scripts/progress-tracker.js timeline",
+    "check:types": "tsc --noEmit && turbo run type-check",
+    "check:lint": "turbo run lint",
+    "fix:types": "turbo run type-check --continue"
+  },
+  "devDependencies": {
+    "@types/node": "^20.11.5",
+    "eslint": "^8.56.0",
+    "prettier": "^3.2.4",
+    "turbo": "^1.11.3",
+    "typescript": "^5.3.3"
+  },
+  "engines": {
+    "node": ">=18.17.0",
+    "npm": ">=9.0.0"
+  },
+  "packageManager": "npm@10.2.4"
+}

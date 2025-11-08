@@ -1,0 +1,102 @@
+// Prisma Schema for AI Council Portal
+// Database: PostgreSQL
+// This is the initial schema with User model
+// Will be expanded in Phase 1 with sessions, and Phase 2+ with agents, memories, etc.
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+// ==================== User Management ====================
+
+model User {
+  id        String   @id @default(uuid())
+  email     String   @unique
+  name      String
+  password  String   // Hashed with bcrypt
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  // Relations (will be added in future phases)
+  // sessions  Session[]
+  // councils  CouncilSession[]
+  // memories  Memory[]
+
+  @@map("users")
+}
+
+// ==================== Future Models (Phase 1+) ====================
+
+// model Session {
+//   id        String   @id @default(uuid())
+//   userId    String
+//   token     String   @unique
+//   expiresAt DateTime
+//   createdAt DateTime @default(now())
+//
+//   user User @relation(fields: [userId], references: [id], onDelete: Cascade)
+//
+//   @@map("sessions")
+// }
+
+// ==================== Future Models (Phase 3+) ====================
+
+// model CouncilSession {
+//   id        String   @id @default(uuid())
+//   userId    String
+//   agents    Json     // Array of agent configurations
+//   createdAt DateTime @default(now())
+//   updatedAt DateTime @updatedAt
+//
+//   user     User      @relation(fields: [userId], references: [id], onDelete: Cascade)
+//   messages Message[]
+//
+//   @@map("council_sessions")
+// }
+
+// model Message {
+//   id        String   @id @default(uuid())
+//   sessionId String
+//   agentId   String?  // null for user messages
+//   content   String   @db.Text
+//   role      String   // 'user' or 'agent'
+//   createdAt DateTime @default(now())
+//
+//   session CouncilSession @relation(fields: [sessionId], references: [id], onDelete: Cascade)
+//
+//   @@map("messages")
+// }
+
+// ==================== Future Models (Phase 4+) ====================
+
+// model Memory {
+//   id        String   @id @default(uuid())
+//   userId    String
+//   sessionId String
+//   content   String   @db.Text
+//   embedding Json     // Vector embedding
+//   metadata  Json     // Additional metadata
+//   createdAt DateTime @default(now())
+//
+//   user User @relation(fields: [userId], references: [id], onDelete: Cascade)
+//
+//   @@map("memories")
+// }
+
+// ==================== Future Models (Phase 5+) ====================
+
+// model GeneratedOutput {
+//   id        String   @id @default(uuid())
+//   sessionId String
+//   type      String   // 'document', 'code', 'image'
+//   content   String   @db.Text
+//   filename  String
+//   createdAt DateTime @default(now())
+//
+//   @@map("generated_outputs")
+// }
