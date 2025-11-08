@@ -75,11 +75,18 @@ async function apiRequest<T>(
     Object.assign(headers, options.headers)
   }
 
+  // Add 5-second timeout to prevent hanging when backend is down
+  const controller = new AbortController()
+  const timeoutId = setTimeout(() => controller.abort(), 5000)
+
   try {
     const response = await fetch(url, {
       ...options,
       headers,
+      signal: controller.signal, // Add abort signal
     })
+
+    clearTimeout(timeoutId) // Clear timeout if request succeeded
 
     const data = await response.json()
 
@@ -93,7 +100,16 @@ async function apiRequest<T>(
 
     return data
   } catch (error) {
+    clearTimeout(timeoutId)
     console.error('API request error:', error)
+
+    // Check if it was a timeout/abort
+    if (error instanceof Error && error.name === 'AbortError') {
+      return {
+        success: false,
+        error: 'Request timeout - backend server may be offline',
+      }
+    }
 
     return {
       success: false,
