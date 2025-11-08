@@ -1,35 +1,30 @@
 /**
  * Dashboard Page
  * Protected page - requires authentication
- * Shows user profile and account information
+ * Shows user profile, stats, and quick actions
  */
 
 'use client'
 
-import { useRouter } from 'next/navigation'
-import { useAuthStore } from '../../stores/auth-store'
+import { motion } from 'framer-motion'
 import { useRequireAuth } from '../../lib/hooks/useAuth'
+import DashboardHeader from '../../components/dashboard/dashboard-header'
+import StatsCards from '../../components/dashboard/stats-cards'
+import QuickActions from '../../components/dashboard/quick-actions'
+import AccountInfo from '../../components/dashboard/account-info'
 
 export default function DashboardPage() {
   // Automatically redirects to /login if not authenticated
   const { user, isLoading } = useRequireAuth()
 
-  const router = useRouter()
-  const { logout } = useAuthStore()
-
-  /**
-   * Handle logout
-   */
-  const handleLogout = () => {
-    logout()
-    router.push('/login')
-  }
-
   // Show loading while checking authentication
   if (isLoading) {
     return (
-      <div className="flex min-h-screen items-center justify-center">
-        <div className="text-lg">Loading...</div>
+      <div className="min-h-screen bg-gray-50 flex items-center justify-center">
+        <div className="text-center">
+          <div className="inline-block h-12 w-12 animate-spin rounded-full border-4 border-solid border-brand-indigo border-r-transparent mb-4"></div>
+          <p className="text-gray-600">Loading dashboard...</p>
+        </div>
       </div>
     )
   }
@@ -42,170 +37,24 @@ export default function DashboardPage() {
   return (
     <div className="min-h-screen bg-gray-50">
       {/* Header */}
-      <header className="bg-white shadow">
-        <div className="mx-auto max-w-7xl px-4 py-6 sm:px-6 lg:px-8">
-          <div className="flex items-center justify-between">
-            <h1 className="text-3xl font-bold tracking-tight text-gray-900">Dashboard</h1>
-            <button
-              onClick={handleLogout}
-              className="rounded-md bg-red-600 px-4 py-2 text-sm font-medium text-white hover:bg-red-700 focus:outline-none focus:ring-2 focus:ring-red-500 focus:ring-offset-2"
-            >
-              Logout
-            </button>
-          </div>
-        </div>
-      </header>
+      <DashboardHeader userName={user.name || user.email} />
 
       {/* Main Content */}
-      <main className="mx-auto max-w-7xl px-4 py-8 sm:px-6 lg:px-8">
-        {/* Welcome Card */}
-        <div className="mb-8 overflow-hidden rounded-lg bg-white shadow">
-          <div className="px-4 py-5 sm:p-6">
-            <h2 className="text-2xl font-bold text-gray-900">
-              Welcome{user.name ? `, ${user.name}` : ''}!
-            </h2>
-            <p className="mt-1 text-sm text-gray-600">
-              You're successfully logged in to AI Council Portal
-            </p>
-          </div>
-        </div>
+      <main className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8 md:py-12">
+        <motion.div
+          initial={{ opacity: 0, y: 20 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ duration: 0.6 }}
+        >
+          {/* Stats Cards */}
+          <StatsCards userSubscriptionTier={user.subscriptionTier} />
 
-        {/* Account Information */}
-        <div className="overflow-hidden rounded-lg bg-white shadow">
-          <div className="px-4 py-5 sm:p-6">
-            <h3 className="text-lg font-medium leading-6 text-gray-900">Account Information</h3>
-            <div className="mt-5 border-t border-gray-200">
-              <dl className="divide-y divide-gray-200">
-                {/* Email */}
-                <div className="py-4 sm:grid sm:grid-cols-3 sm:gap-4 sm:py-5">
-                  <dt className="text-sm font-medium text-gray-500">Email address</dt>
-                  <dd className="mt-1 text-sm text-gray-900 sm:col-span-2 sm:mt-0">{user.email}</dd>
-                </div>
+          {/* Quick Actions */}
+          <QuickActions />
 
-                {/* Name */}
-                <div className="py-4 sm:grid sm:grid-cols-3 sm:gap-4 sm:py-5">
-                  <dt className="text-sm font-medium text-gray-500">Name</dt>
-                  <dd className="mt-1 text-sm text-gray-900 sm:col-span-2 sm:mt-0">
-                    {user.name || 'Not provided'}
-                  </dd>
-                </div>
-
-                {/* Subscription Tier */}
-                <div className="py-4 sm:grid sm:grid-cols-3 sm:gap-4 sm:py-5">
-                  <dt className="text-sm font-medium text-gray-500">Subscription</dt>
-                  <dd className="mt-1 sm:col-span-2 sm:mt-0">
-                    <span
-                      className={`inline-flex rounded-full px-2 text-xs font-semibold leading-5 ${
-                        user.subscriptionTier === 'FREE'
-                          ? 'bg-gray-100 text-gray-800'
-                          : user.subscriptionTier === 'PRO'
-                          ? 'bg-blue-100 text-blue-800'
-                          : 'bg-purple-100 text-purple-800'
-                      }`}
-                    >
-                      {user.subscriptionTier}
-                    </span>
-                  </dd>
-                </div>
-
-                {/* Account Created */}
-                <div className="py-4 sm:grid sm:grid-cols-3 sm:gap-4 sm:py-5">
-                  <dt className="text-sm font-medium text-gray-500">Account created</dt>
-                  <dd className="mt-1 text-sm text-gray-900 sm:col-span-2 sm:mt-0">
-                    {new Date(user.createdAt).toLocaleDateString('en-US', {
-                      year: 'numeric',
-                      month: 'long',
-                      day: 'numeric',
-                    })}
-                  </dd>
-                </div>
-              </dl>
-            </div>
-          </div>
-        </div>
-
-        {/* Quick Actions (Placeholder for future features) */}
-        <div className="mt-8">
-          <h3 className="text-lg font-medium text-gray-900">Quick Actions</h3>
-          <div className="mt-4 grid grid-cols-1 gap-4 sm:grid-cols-2 lg:grid-cols-3">
-            {/* Test Agents (Phase 2) */}
-            <button
-              onClick={() => router.push('/test-agents' as any)}
-              className="flex items-center justify-center rounded-lg border-2 border-blue-500 bg-blue-50 p-6 text-center hover:bg-blue-100 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2 transition-colors"
-            >
-              <div>
-                <div className="text-3xl mb-2">🧪</div>
-                <h4 className="text-base font-medium text-blue-900">Test Agents</h4>
-                <p className="mt-1 text-sm text-blue-700">Try out AI agents - Phase 2</p>
-              </div>
-            </button>
-
-            {/* Create Council (Phase 3 ACTIVE!) */}
-            <button
-              onClick={() => router.push('/councils/new' as any)}
-              className="flex items-center justify-center rounded-lg border-2 border-green-500 bg-green-50 p-6 text-center hover:bg-green-100 focus:outline-none focus:ring-2 focus:ring-green-500 focus:ring-offset-2 transition-colors"
-            >
-              <div>
-                <div className="text-3xl mb-2">🏛️</div>
-                <h4 className="text-base font-medium text-green-900">Create Council</h4>
-                <p className="mt-1 text-sm text-green-700">Start a new AI team - Phase 3</p>
-              </div>
-            </button>
-
-            {/* View Councils (Phase 3 ACTIVE!) */}
-            <button
-              onClick={() => router.push('/councils' as any)}
-              className="flex items-center justify-center rounded-lg border-2 border-purple-500 bg-purple-50 p-6 text-center hover:bg-purple-100 focus:outline-none focus:ring-2 focus:ring-purple-500 focus:ring-offset-2 transition-colors"
-            >
-              <div>
-                <div className="text-3xl mb-2">📋</div>
-                <h4 className="text-base font-medium text-purple-900">My Councils</h4>
-                <p className="mt-1 text-sm text-purple-700">View all councils - Phase 3</p>
-              </div>
-            </button>
-
-            {/* Upgrade (Future) */}
-            <button
-              disabled
-              className="flex items-center justify-center rounded-lg border-2 border-dashed border-gray-300 p-6 text-center hover:border-gray-400 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2 disabled:cursor-not-allowed disabled:opacity-50"
-            >
-              <div>
-                <h4 className="text-base font-medium text-gray-900">Upgrade Plan</h4>
-                <p className="mt-1 text-sm text-gray-500">Coming soon</p>
-              </div>
-            </button>
-          </div>
-        </div>
-
-        {/* Phase 2 Complete Message */}
-        <div className="mt-8 rounded-lg bg-green-50 p-4">
-          <div className="flex">
-            <div className="flex-shrink-0">
-              <svg
-                className="h-5 w-5 text-green-400"
-                viewBox="0 0 20 20"
-                fill="currentColor"
-                aria-hidden="true"
-              >
-                <path
-                  fillRule="evenodd"
-                  d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.857-9.809a.75.75 0 00-1.214-.882l-3.483 4.79-1.88-1.88a.75.75 0 10-1.06 1.061l2.5 2.5a.75.75 0 001.137-.089l4-5.5z"
-                  clipRule="evenodd"
-                />
-              </svg>
-            </div>
-            <div className="ml-3">
-              <h3 className="text-sm font-medium text-green-800">
-                Phase 3: Council Session UI Complete!
-              </h3>
-              <div className="mt-2 text-sm text-green-700">
-                <p>
-                  Create AI councils with 4 specialized agents! Get GPT-4 powered recommendations, chat in real-time with your AI team, and collaborate to achieve your goals. Click "Create Council" to start!
-                </p>
-              </div>
-            </div>
-          </div>
-        </div>
+          {/* Account Information */}
+          <AccountInfo user={user} />
+        </motion.div>
       </main>
     </div>
   )
