@@ -133,11 +133,13 @@ export interface CouncilSession {
 
 export interface Message {
   id: string
-  sessionId: string
-  agentId: string | null // null for user messages
+  councilId: string
+  role: 'USER' | 'AGENT' | 'SYSTEM'
+  agentId: string | null // null for USER or SYSTEM messages
   content: string
-  role: 'user' | 'agent'
-  timestamp: Date
+  tokensUsed: number | null
+  cost: number | null
+  createdAt: Date
 }
 
 // ==================== API Response Types ====================
@@ -237,4 +239,78 @@ export interface AgentTestResponse {
   tokensUsed: number
   estimatedCost: number
   model: string
+}
+
+// ==================== Council Types (Phase 3) ====================
+
+export interface Council {
+  id: string
+  userId: string
+  name: string
+  description: string
+  agent1Id: string
+  agent2Id: string
+  agent3Id: string
+  agent4Id: string
+  agent1Custom?: string | null
+  agent2Custom?: string | null
+  agent3Custom?: string | null
+  agent4Custom?: string | null
+  status: 'ACTIVE' | 'ARCHIVED' | 'DELETED'
+  createdAt: Date
+  updatedAt: Date
+}
+
+export interface CouncilWithMessages extends Council {
+  messages: Message[]
+}
+
+export interface CouncilWithCount extends Council {
+  _count: {
+    messages: number
+  }
+}
+
+export interface CreateCouncilRequest {
+  name: string
+  description: string
+  agent1Id: string
+  agent2Id: string
+  agent3Id: string
+  agent4Id: string
+  agent1Custom?: string
+  agent2Custom?: string
+  agent3Custom?: string
+  agent4Custom?: string
+}
+
+export interface UpdateCouncilRequest {
+  name?: string
+  status?: 'ACTIVE' | 'ARCHIVED' | 'DELETED'
+}
+
+// ==================== Socket.IO Event Types (Phase 3) ====================
+
+// Client -> Server Events
+export interface ClientToServerEvents {
+  join_council: (data: { councilId: string }) => void
+  leave_council: (data: { councilId: string }) => void
+  send_message: (data: { councilId: string; content: string }) => void
+}
+
+// Server -> Client Events
+export interface ServerToClientEvents {
+  joined_council: (data: { success: boolean; councilId: string; councilName: string }) => void
+  user_message: (data: { messageId: string; content: string; createdAt: Date }) => void
+  agent_typing: (data: { agentNumber: number; totalAgents: number }) => void
+  agent_response: (data: {
+    agentId: string
+    agentName: string
+    content: string
+    messageId: string
+    tokensUsed: number
+    cost: number
+  }) => void
+  all_agents_responded: (data: { totalResponses: number }) => void
+  error: (data: { message: string }) => void
 }

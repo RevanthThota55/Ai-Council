@@ -5,6 +5,8 @@ import { createServer } from 'http'
 import { Server } from 'socket.io'
 import authRoutes from './routes/auth.routes'
 import agentRoutes from './routes/agent.routes'
+import councilRoutes from './routes/council.routes'
+import { setupCouncilHandlers } from './socket/council.handlers'
 
 // Load environment variables
 dotenv.config()
@@ -42,6 +44,7 @@ app.get('/health', (_req: Request, res: Response) => {
 // API Routes
 app.use('/api/auth', authRoutes)
 app.use('/api/agents', agentRoutes)
+app.use('/api/councils', councilRoutes)
 
 // Root endpoint
 app.get('/', (_req: Request, res: Response) => {
@@ -52,18 +55,13 @@ app.get('/', (_req: Request, res: Response) => {
       health: '/health',
       auth: '/api/auth',
       agents: '/api/agents',
+      councils: '/api/councils',
     },
   })
 })
 
-// Socket.IO connection handling (skeleton for Phase 3)
-io.on('connection', (socket) => {
-  console.log('Client connected:', socket.id)
-
-  socket.on('disconnect', () => {
-    console.log('Client disconnected:', socket.id)
-  })
-})
+// Socket.IO connection handling (Phase 3: Council Chat)
+setupCouncilHandlers(io)
 
 // Server configuration
 const PORT = process.env.PORT || 3001

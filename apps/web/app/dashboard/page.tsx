@@ -140,25 +140,27 @@ export default function DashboardPage() {
               </div>
             </button>
 
-            {/* Create Council (Phase 3) */}
+            {/* Create Council (Phase 3 ACTIVE!) */}
             <button
-              disabled
-              className="flex items-center justify-center rounded-lg border-2 border-dashed border-gray-300 p-6 text-center hover:border-gray-400 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2 disabled:cursor-not-allowed disabled:opacity-50"
+              onClick={() => router.push('/councils/new' as any)}
+              className="flex items-center justify-center rounded-lg border-2 border-green-500 bg-green-50 p-6 text-center hover:bg-green-100 focus:outline-none focus:ring-2 focus:ring-green-500 focus:ring-offset-2 transition-colors"
             >
               <div>
-                <h4 className="text-base font-medium text-gray-900">Create Council</h4>
-                <p className="mt-1 text-sm text-gray-500">Coming in Phase 3</p>
+                <div className="text-3xl mb-2">🏛️</div>
+                <h4 className="text-base font-medium text-green-900">Create Council</h4>
+                <p className="mt-1 text-sm text-green-700">Start a new AI team - Phase 3</p>
               </div>
             </button>
 
-            {/* View Councils (Phase 3) */}
+            {/* View Councils (Phase 3 ACTIVE!) */}
             <button
-              disabled
-              className="flex items-center justify-center rounded-lg border-2 border-dashed border-gray-300 p-6 text-center hover:border-gray-400 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2 disabled:cursor-not-allowed disabled:opacity-50"
+              onClick={() => router.push('/councils' as any)}
+              className="flex items-center justify-center rounded-lg border-2 border-purple-500 bg-purple-50 p-6 text-center hover:bg-purple-100 focus:outline-none focus:ring-2 focus:ring-purple-500 focus:ring-offset-2 transition-colors"
             >
               <div>
-                <h4 className="text-base font-medium text-gray-900">My Councils</h4>
-                <p className="mt-1 text-sm text-gray-500">Coming in Phase 3</p>
+                <div className="text-3xl mb-2">📋</div>
+                <h4 className="text-base font-medium text-purple-900">My Councils</h4>
+                <p className="mt-1 text-sm text-purple-700">View all councils - Phase 3</p>
               </div>
             </button>
 
@@ -194,11 +196,11 @@ export default function DashboardPage() {
             </div>
             <div className="ml-3">
               <h3 className="text-sm font-medium text-green-800">
-                Phase 2: AI Agent System Complete!
+                Phase 3: Council Session UI Complete!
               </h3>
               <div className="mt-2 text-sm text-green-700">
                 <p>
-                  32 AI agents available across 6 categories! Test agents with custom prompts, get GPT-4 powered recommendations, and track your usage. Click "Test Agents" above to try it out!
+                  Create AI councils with 4 specialized agents! Get GPT-4 powered recommendations, chat in real-time with your AI team, and collaborate to achieve your goals. Click "Create Council" to start!
                 </p>
               </div>
             </div>

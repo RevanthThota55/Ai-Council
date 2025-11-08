@@ -20,6 +20,18 @@ enum SubscriptionTier {
   BUSINESS
 }
 
+enum CouncilStatus {
+  ACTIVE
+  ARCHIVED
+  DELETED
+}
+
+enum MessageRole {
+  USER
+  AGENT
+  SYSTEM
+}
+
 // ==================== User Management ====================
 
 model User {
@@ -33,7 +45,7 @@ model User {
 
   // Relations
   sessions Session[]
-  // councils  CouncilSession[]  // Phase 3+
+  councils Council[] // Phase 3: Active
   // memories  Memory[]          // Phase 4+
 
   @@map("users")
@@ -53,33 +65,60 @@ model Session {
   @@map("sessions")
 }
 
-// ==================== Future Models (Phase 3+) ====================
+// ==================== Council Session (Phase 3) ====================
 
-// model CouncilSession {
-//   id        String   @id @default(uuid())
-//   userId    String
-//   agents    Json     // Array of agent configurations
-//   createdAt DateTime @default(now())
-//   updatedAt DateTime @updatedAt
-//
-//   user     User      @relation(fields: [userId], references: [id], onDelete: Cascade)
-//   messages Message[]
-//
-//   @@map("council_sessions")
-// }
+model Council {
+  id          String        @id @default(uuid())
+  userId      String
+  name        String        // e.g. "Learn Python Council"
+  description String        @db.Text // User's original goal
 
-// model Message {
-//   id        String   @id @default(uuid())
-//   sessionId String
-//   agentId   String?  // null for user messages
-//   content   String   @db.Text
-//   role      String   // 'user' or 'agent'
-//   createdAt DateTime @default(now())
-//
-//   session CouncilSession @relation(fields: [sessionId], references: [id], onDelete: Cascade)
-//
-//   @@map("messages")
-// }
+  // The 4 agents in this council
+  agent1Id String // e.g. "agent-coder"
+  agent2Id String
+  agent3Id String
+  agent4Id String
+
+  // Optional: Custom agent instructions (override default system prompt)
+  agent1Custom String? @db.Text
+  agent2Custom String? @db.Text
+  agent3Custom String? @db.Text
+  agent4Custom String? @db.Text
+
+  status CouncilStatus @default(ACTIVE)
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  // Relations
+  user     User      @relation(fields: [userId], references: [id], onDelete: Cascade)
+  messages Message[]
+
+  @@index([userId])
+  @@index([status])
+  @@map("councils")
+}
+
+model Message {
+  id         String      @id @default(uuid())
+  councilId  String
+  role       MessageRole
+  agentId    String? // null if role=USER or role=SYSTEM
+  content    String      @db.Text
+
+  // Usage tracking (for AGENT messages)
+  tokensUsed Int?
+  cost       Float? // in dollars
+
+  createdAt DateTime @default(now())
+
+  // Relations
+  council Council @relation(fields: [councilId], references: [id], onDelete: Cascade)
+
+  @@index([councilId])
+  @@index([createdAt])
+  @@map("messages")
+}
 
 // ==================== Future Models (Phase 4+) ====================
 

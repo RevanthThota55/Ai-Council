@@ -322,22 +322,27 @@ Get current user's API usage statistics.
 
 ## Council Sessions
 
-> **Phase 3:** Coming in Days 11-14
+> **Phase 3:** ✅ Complete
 
-### POST /api/sessions
+### POST /api/councils
 
-Create a new council session.
+Create a new council with 4 AI agents.
+
+**Requires:** Authentication
 
 **Request Body:**
 ```json
 {
-  "agentIds": [
-    "agent-coder",
-    "agent-designer",
-    "agent-analyst",
-    "agent-researcher",
-    "agent-writer"
-  ]
+  "name": "Learn Python Council",
+  "description": "I want to learn Python and build web applications",
+  "agent1Id": "agent-coder",
+  "agent2Id": "agent-teacher",
+  "agent3Id": "agent-debugger",
+  "agent4Id": "agent-researcher",
+  "agent1Custom": "Optional custom instructions",
+  "agent2Custom": null,
+  "agent3Custom": null,
+  "agent4Custom": null
 }
 ```
 
@@ -346,52 +351,229 @@ Create a new council session.
 {
   "success": true,
   "data": {
-    "id": "session-uuid",
+    "id": "council-uuid",
     "userId": "user-uuid",
-    "agents": [...],
-    "createdAt": "2025-01-08T10:00:00.000Z"
-  }
+    "name": "Learn Python Council",
+    "description": "I want to learn Python and build web applications",
+    "agent1Id": "agent-coder",
+    "agent2Id": "agent-teacher",
+    "agent3Id": "agent-debugger",
+    "agent4Id": "agent-researcher",
+    "status": "ACTIVE",
+    "createdAt": "2025-01-08T10:00:00.000Z",
+    "updatedAt": "2025-01-08T10:00:00.000Z"
+  },
+  "message": "Council created successfully"
 }
 ```
 
-### GET /api/sessions/:sessionId
+### GET /api/councils
 
-Get session details and message history.
+Get user's councils (active or archived).
+
+**Requires:** Authentication
+
+**Query Parameters:**
+- `status` (optional): "ACTIVE" | "ARCHIVED" | "DELETED"
+
+**Response (200):**
+```json
+{
+  "success": true,
+  "data": [
+    {
+      "id": "council-uuid",
+      "name": "Learn Python Council",
+      "description": "I want to learn Python...",
+      "agent1Id": "agent-coder",
+      "agent2Id": "agent-teacher",
+      "agent3Id": "agent-debugger",
+      "agent4Id": "agent-researcher",
+      "status": "ACTIVE",
+      "createdAt": "2025-01-08T10:00:00.000Z",
+      "updatedAt": "2025-01-08T12:30:00.000Z",
+      "_count": {
+        "messages": 24
+      }
+    }
+  ],
+  "message": "Found 3 councils"
+}
+```
+
+### GET /api/councils/:id
+
+Get single council with full message history.
+
+**Requires:** Authentication
 
 **Response (200):**
 ```json
 {
   "success": true,
   "data": {
-    "id": "session-uuid",
-    "agents": [...],
+    "id": "council-uuid",
+    "name": "Learn Python Council",
+    "description": "I want to learn Python and build web applications",
+    "agent1Id": "agent-coder",
+    "agent2Id": "agent-teacher",
+    "agent3Id": "agent-debugger",
+    "agent4Id": "agent-researcher",
+    "status": "ACTIVE",
+    "createdAt": "2025-01-08T10:00:00.000Z",
+    "updatedAt": "2025-01-08T12:30:00.000Z",
     "messages": [
       {
         "id": "msg-uuid",
-        "role": "user",
-        "content": "Help me build a website",
-        "timestamp": "2025-01-08T10:00:00.000Z"
+        "councilId": "council-uuid",
+        "role": "SYSTEM",
+        "agentId": null,
+        "content": "Council created! Your AI team is ready.",
+        "tokensUsed": null,
+        "cost": null,
+        "createdAt": "2025-01-08T10:00:00.000Z"
       },
       {
         "id": "msg-uuid",
-        "role": "agent",
+        "councilId": "council-uuid",
+        "role": "USER",
+        "agentId": null,
+        "content": "Hello team! Where should I start?",
+        "tokensUsed": null,
+        "cost": null,
+        "createdAt": "2025-01-08T10:01:00.000Z"
+      },
+      {
+        "id": "msg-uuid",
+        "councilId": "council-uuid",
+        "role": "AGENT",
         "agentId": "agent-coder",
-        "content": "I can help with the technical implementation...",
-        "timestamp": "2025-01-08T10:00:05.000Z"
+        "content": "Great question! Let's start with Python basics...",
+        "tokensUsed": 145,
+        "cost": 0.00435,
+        "createdAt": "2025-01-08T10:01:05.000Z"
       }
     ]
   }
 }
 ```
 
-### WebSocket: /socket
+### PUT /api/councils/:id
 
-Real-time communication for council sessions.
+Update council name or status.
 
-**Events:**
+**Requires:** Authentication
 
-**Client → Server:**
-- `join_session` - Join a session
+**Request Body:**
+```json
+{
+  "name": "Updated Council Name",
+  "status": "ARCHIVED"
+}
+```
+
+**Response (200):**
+```json
+{
+  "success": true,
+  "data": {
+    "id": "council-uuid",
+    "name": "Updated Council Name",
+    "status": "ARCHIVED",
+    ...
+  },
+  "message": "Council updated successfully"
+}
+```
+
+### DELETE /api/councils/:id
+
+Soft delete council (sets status to DELETED).
+
+**Requires:** Authentication
+
+**Response (200):**
+```json
+{
+  "success": true,
+  "message": "Council deleted successfully"
+}
+```
+
+### WebSocket: Socket.IO Events
+
+Real-time communication for council chat.
+
+**Connection:**
+```javascript
+const socket = io('http://localhost:3001', {
+  auth: { token: 'your-jwt-token' }
+})
+```
+
+**Client → Server Events:**
+
+**join_council**
+```javascript
+socket.emit('join_council', { councilId: 'council-uuid' })
+```
+
+**send_message**
+```javascript
+socket.emit('send_message', {
+  councilId: 'council-uuid',
+  content: 'My message to the council'
+})
+```
+
+**leave_council**
+```javascript
+socket.emit('leave_council', { councilId: 'council-uuid' })
+```
+
+**Server → Client Events:**
+
+**joined_council**
+```javascript
+socket.on('joined_council', (data) => {
+  // { success: true, councilId: '...', councilName: '...' }
+})
+```
+
+**user_message**
+```javascript
+socket.on('user_message', (data) => {
+  // { messageId: '...', content: '...', createdAt: Date }
+})
+```
+
+**agent_typing**
+```javascript
+socket.on('agent_typing', (data) => {
+  // { agentNumber: 1, totalAgents: 4 }
+})
+```
+
+**agent_response**
+```javascript
+socket.on('agent_response', (data) => {
+  // { agentId: '...', agentName: '...', content: '...', messageId: '...', tokensUsed: 123, cost: 0.00369 }
+})
+```
+
+**all_agents_responded**
+```javascript
+socket.on('all_agents_responded', (data) => {
+  // { totalResponses: 4 }
+})
+```
+
+**error**
+```javascript
+socket.on('error', (data) => {
+  // { message: 'Error description' }
+})
+```
 - `send_message` - Send message to council
 - `leave_session` - Leave session
 
