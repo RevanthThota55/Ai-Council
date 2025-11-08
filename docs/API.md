@@ -126,39 +126,94 @@ Authorization: Bearer <access-token>
 
 ## AI Agents
 
-> **Phase 2:** Coming in Days 7-10
+> **Phase 2:** ✅ Complete
 
-### GET /api/agents
+### GET /api/agents/templates
 
-List all available AI agents.
+List all available AI agent templates (32 agents across 6 categories).
 
 **Response (200):**
 ```json
 {
   "success": true,
-  "data": [
-    {
-      "id": "agent-coder",
-      "role": "coder",
-      "name": "CodeMaster",
-      "description": "Expert in writing clean, efficient code",
-      "model": "gpt-4",
-      "temperature": 0.3
-    },
-    // ... more agents
-  ]
+  "data": {
+    "agents": [
+      {
+        "id": "agent-coder",
+        "role": "coder",
+        "name": "CodeMaster",
+        "description": "Full-stack developer specializing in clean, efficient code",
+        "category": "coding",
+        "model": "gpt-4",
+        "temperature": 0.3,
+        "icon": "💻"
+      }
+      // ... 31 more agents
+    ],
+    "total": 32,
+    "categoryCounts": {
+      "coding": 8,
+      "business": 6,
+      "writing": 5,
+      "learning": 5,
+      "health": 4,
+      "creative": 3
+    }
+  },
+  "message": "32 agent templates available"
 }
 ```
 
-### POST /api/agents/test
+### GET /api/agents/templates/:category
 
-Test an AI agent with a prompt (for development).
+Get agent templates by category.
+
+**Parameters:**
+- `category` (string): One of: `coding`, `business`, `writing`, `learning`, `health`, `creative`
+
+**Response (200):**
+```json
+{
+  "success": true,
+  "data": {
+    "category": "coding",
+    "agents": [...],
+    "total": 8
+  },
+  "message": "Found 8 agents in coding category"
+}
+```
+
+### GET /api/agents/search?q=keyword
+
+Search agents by keyword.
+
+**Query Parameters:**
+- `q` (string, required): Search query
+
+**Response (200):**
+```json
+{
+  "success": true,
+  "data": {
+    "query": "code",
+    "results": [...],
+    "total": 5
+  },
+  "message": "Found 5 matching agents"
+}
+```
+
+### POST /api/agents/recommend
+
+Get 4 AI-recommended agents based on user's goal description.
+
+**Requires:** Authentication
 
 **Request Body:**
 ```json
 {
-  "agentId": "agent-coder",
-  "prompt": "Write a function to check if a number is prime"
+  "description": "I want to learn Python and build a web scraper"
 }
 ```
 
@@ -167,9 +222,99 @@ Test an AI agent with a prompt (for development).
 {
   "success": true,
   "data": {
-    "agentId": "agent-coder",
-    "response": "Here's a function to check if a number is prime..."
+    "recommendations": [
+      {
+        "agent": { /* full agent object */ },
+        "reason": "Teaches Python fundamentals and coding best practices",
+        "relevanceScore": 95
+      },
+      {
+        "agent": { /* full agent object */ },
+        "reason": "Expert in web scraping libraries and techniques",
+        "relevanceScore": 90
+      },
+      {
+        "agent": { /* full agent object */ },
+        "reason": "Reviews your code for quality and improvements",
+        "relevanceScore": 85
+      },
+      {
+        "agent": { /* full agent object */ },
+        "reason": "Helps debug errors and fix issues",
+        "relevanceScore": 80
+      }
+    ],
+    "description": "I want to learn Python and build a web scraper",
+    "analysisUsed": {
+      "model": "gpt-4",
+      "tokensUsed": 350,
+      "estimatedCost": 0.0105
+    }
+  },
+  "message": "Generated 4 agent recommendations based on your goal"
+}
+```
+
+### POST /api/agents/test
+
+Test a specific agent with a custom prompt.
+
+**Requires:** Authentication
+
+**Request Body:**
+```json
+{
+  "agentId": "agent-coder",
+  "prompt": "Write a Python function to reverse a string"
+}
+```
+
+**Response (200):**
+```json
+{
+  "success": true,
+  "data": {
+    "agentName": "CodeMaster",
+    "agentRole": "coder",
+    "response": "Here's a Python function to reverse a string:\n\ndef reverse_string(s):\n    return s[::-1]",
+    "tokensUsed": 45,
+    "estimatedCost": 0.00135,
+    "model": "gpt-4"
+  },
+  "message": "Agent test successful"
+}
+```
+
+**Error Response (429):**
+```json
+{
+  "success": false,
+  "error": "Rate limit exceeded. You have 20 requests this hour. Limit: 20 requests/hour for FREE tier.",
+  "data": {
+    "requestsThisHour": 20,
+    "limit": 20
   }
+}
+```
+
+### GET /api/agents/usage
+
+Get current user's API usage statistics.
+
+**Requires:** Authentication
+
+**Response (200):**
+```json
+{
+  "success": true,
+  "data": {
+    "totalRequests": 15,
+    "totalTokens": 5420,
+    "totalCost": 0.1626,
+    "requestsThisHour": 5,
+    "lastRequest": "2025-01-08T10:30:00.000Z"
+  },
+  "message": "Usage statistics retrieved"
 }
 ```
 

@@ -128,6 +128,18 @@ export default function DashboardPage() {
         <div className="mt-8">
           <h3 className="text-lg font-medium text-gray-900">Quick Actions</h3>
           <div className="mt-4 grid grid-cols-1 gap-4 sm:grid-cols-2 lg:grid-cols-3">
+            {/* Test Agents (Phase 2) */}
+            <button
+              onClick={() => router.push('/test-agents' as any)}
+              className="flex items-center justify-center rounded-lg border-2 border-blue-500 bg-blue-50 p-6 text-center hover:bg-blue-100 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2 transition-colors"
+            >
+              <div>
+                <div className="text-3xl mb-2">🧪</div>
+                <h4 className="text-base font-medium text-blue-900">Test Agents</h4>
+                <p className="mt-1 text-sm text-blue-700">Try out AI agents - Phase 2</p>
+              </div>
+            </button>
+
             {/* Create Council (Phase 3) */}
             <button
               disabled
@@ -163,7 +175,7 @@ export default function DashboardPage() {
           </div>
         </div>
 
-        {/* Phase 1 Complete Message */}
+        {/* Phase 2 Complete Message */}
         <div className="mt-8 rounded-lg bg-green-50 p-4">
           <div className="flex">
             <div className="flex-shrink-0">
@@ -182,12 +194,11 @@ export default function DashboardPage() {
             </div>
             <div className="ml-3">
               <h3 className="text-sm font-medium text-green-800">
-                Phase 1: Authentication Complete!
+                Phase 2: AI Agent System Complete!
               </h3>
               <div className="mt-2 text-sm text-green-700">
                 <p>
-                  You can now signup, login, and access your protected dashboard. Next up: Phase 2
-                  - AI Agent System!
+                  32 AI agents available across 6 categories! Test agents with custom prompts, get GPT-4 powered recommendations, and track your usage. Click "Test Agents" above to try it out!
                 </p>
               </div>
             </div>

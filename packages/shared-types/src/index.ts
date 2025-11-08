@@ -52,12 +52,61 @@ export interface AuthResponse {
 
 // ==================== AI Agent Types ====================
 
+export enum AgentCategory {
+  CODING = 'coding',
+  BUSINESS = 'business',
+  WRITING = 'writing',
+  LEARNING = 'learning',
+  HEALTH = 'health',
+  CREATIVE = 'creative',
+}
+
 export enum AgentRole {
+  // Coding Category
   CODER = 'coder',
-  DESIGNER = 'designer',
-  ANALYST = 'analyst',
-  RESEARCHER = 'researcher',
+  DEBUGGER = 'debugger',
+  CODE_REVIEWER = 'code-reviewer',
+  ARCHITECT = 'architect',
+  FRONTEND_DEV = 'frontend-dev',
+  BACKEND_DEV = 'backend-dev',
+  DEVOPS = 'devops',
+  SECURITY = 'security',
+
+  // Business Category
+  STRATEGIST = 'strategist',
+  MARKETER = 'marketer',
+  FINANCIAL = 'financial',
+  SALES = 'sales',
+  LEGAL = 'legal',
+  HR = 'hr',
+
+  // Writing Category
   WRITER = 'writer',
+  EDITOR = 'editor',
+  RESEARCHER = 'researcher',
+  COPYWRITER = 'copywriter',
+  TECHNICAL_WRITER = 'technical-writer',
+
+  // Learning Category
+  TEACHER = 'teacher',
+  TUTOR = 'tutor',
+  MENTOR = 'mentor',
+  QUIZ_MASTER = 'quiz-master',
+  STUDY_BUDDY = 'study-buddy',
+
+  // Health & Fitness Category
+  TRAINER = 'trainer',
+  NUTRITIONIST = 'nutritionist',
+  WELLNESS_COACH = 'wellness-coach',
+  YOGA_INSTRUCTOR = 'yoga-instructor',
+
+  // Creative Category
+  DESIGNER = 'designer',
+  MUSICIAN = 'musician',
+  ARTIST = 'artist',
+
+  // Legacy (keeping for backward compatibility)
+  ANALYST = 'analyst',
 }
 
 export interface AIAgent {
@@ -65,9 +114,11 @@ export interface AIAgent {
   role: AgentRole
   name: string
   description: string
+  category: AgentCategory
   systemPrompt: string
-  model: 'gpt-4' | 'claude-3-opus' | 'claude-3-sonnet'
+  model: 'gpt-4' | 'gpt-4-turbo' | 'claude-3-opus' | 'claude-3-sonnet'
   temperature: number
+  icon: string // Emoji for UI
 }
 
 // ==================== Council Session Types ====================
@@ -133,4 +184,57 @@ export interface GeneratedOutput {
   content: string
   filename: string
   createdAt: Date
+}
+
+// ==================== AI Service Types (Phase 2) ====================
+
+export interface AIMessage {
+  role: 'system' | 'user' | 'assistant'
+  content: string
+}
+
+export interface AICompletionRequest {
+  agentId: string
+  prompt: string
+  conversationHistory?: AIMessage[]
+}
+
+export interface AICompletionResponse {
+  content: string
+  model: string
+  tokensUsed: number
+  estimatedCost: number // in USD
+  finishReason: string
+}
+
+export interface RecommendationRequest {
+  description: string // User's goal description
+}
+
+export interface AgentRecommendation {
+  agent: AIAgent
+  reason: string // Why this agent was recommended
+  relevanceScore: number // 0-100
+}
+
+export interface RecommendationResponse {
+  recommendations: AgentRecommendation[]
+  analysisUsed: {
+    model: string
+    tokensUsed: number
+    estimatedCost: number
+  }
+}
+
+export interface AgentTestRequest {
+  agentId: string
+  prompt: string
+}
+
+export interface AgentTestResponse {
+  agentName: string
+  response: string
+  tokensUsed: number
+  estimatedCost: number
+  model: string
 }

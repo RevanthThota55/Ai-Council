@@ -4,6 +4,7 @@ import dotenv from 'dotenv'
 import { createServer } from 'http'
 import { Server } from 'socket.io'
 import authRoutes from './routes/auth.routes'
+import agentRoutes from './routes/agent.routes'
 
 // Load environment variables
 dotenv.config()
@@ -40,6 +41,7 @@ app.get('/health', (_req: Request, res: Response) => {
 
 // API Routes
 app.use('/api/auth', authRoutes)
+app.use('/api/agents', agentRoutes)
 
 // Root endpoint
 app.get('/', (_req: Request, res: Response) => {
@@ -49,6 +51,7 @@ app.get('/', (_req: Request, res: Response) => {
     endpoints: {
       health: '/health',
       auth: '/api/auth',
+      agents: '/api/agents',
     },
   })
 })
