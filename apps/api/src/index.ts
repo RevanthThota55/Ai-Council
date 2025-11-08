@@ -3,6 +3,7 @@ import cors from 'cors'
 import dotenv from 'dotenv'
 import { createServer } from 'http'
 import { Server } from 'socket.io'
+import authRoutes from './routes/auth.routes'
 
 // Load environment variables
 dotenv.config()
@@ -37,6 +38,9 @@ app.get('/health', (_req: Request, res: Response) => {
   })
 })
 
+// API Routes
+app.use('/api/auth', authRoutes)
+
 // Root endpoint
 app.get('/', (_req: Request, res: Response) => {
   res.json({
@@ -44,7 +48,7 @@ app.get('/', (_req: Request, res: Response) => {
     version: '0.1.0',
     endpoints: {
       health: '/health',
-      // More endpoints will be added in future phases
+      auth: '/api/auth',
     },
   })
 })

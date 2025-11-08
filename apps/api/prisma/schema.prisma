@@ -12,37 +12,46 @@ datasource db {
   url      = env("DATABASE_URL")
 }
 
+// ==================== Enums ====================
+
+enum SubscriptionTier {
+  FREE
+  PRO
+  BUSINESS
+}
+
 // ==================== User Management ====================
 
 model User {
-  id        String   @id @default(uuid())
-  email     String   @unique
-  name      String
-  password  String   // Hashed with bcrypt
-  createdAt DateTime @default(now())
-  updatedAt DateTime @updatedAt
+  id               String           @id @default(uuid())
+  email            String           @unique
+  name             String?          // Optional name field
+  password         String           // Hashed with bcrypt
+  subscriptionTier SubscriptionTier @default(FREE)
+  createdAt        DateTime         @default(now())
+  updatedAt        DateTime         @updatedAt
 
-  // Relations (will be added in future phases)
-  // sessions  Session[]
-  // councils  CouncilSession[]
-  // memories  Memory[]
+  // Relations
+  sessions Session[]
+  // councils  CouncilSession[]  // Phase 3+
+  // memories  Memory[]          // Phase 4+
 
   @@map("users")
 }
 
-// ==================== Future Models (Phase 1+) ====================
+// ==================== Session Management (Phase 1) ====================
 
-// model Session {
-//   id        String   @id @default(uuid())
-//   userId    String
-//   token     String   @unique
-//   expiresAt DateTime
-//   createdAt DateTime @default(now())
-//
-//   user User @relation(fields: [userId], references: [id], onDelete: Cascade)
-//
-//   @@map("sessions")
-// }
+model Session {
+  id        String   @id @default(uuid())
+  userId    String
+  token     String   @unique
+  expiresAt DateTime
+  createdAt DateTime @default(now())
+
+  user User @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@map("sessions")
+}
 
 // ==================== Future Models (Phase 3+) ====================
 

@@ -5,7 +5,13 @@
       "Bash(npm install)",
       "Bash(npx tsc:*)",
       "Bash(npm run build:*)",
-      "Bash(git add:*)"
+      "Bash(git add:*)",
+      "Bash(git commit:*)",
+      "Bash(git remote add:*)",
+      "Bash(git branch:*)",
+      "Bash(git push:*)",
+      "Bash(npx prisma generate)",
+      "Bash(findstr:*)"
     ],
     "deny": [],
     "ask": []

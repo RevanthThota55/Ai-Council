@@ -3,12 +3,21 @@
  * Used across frontend (web) and backend (api)
  */
 
+// ==================== Enums ====================
+
+export enum SubscriptionTier {
+  FREE = 'FREE',
+  PRO = 'PRO',
+  BUSINESS = 'BUSINESS',
+}
+
 // ==================== User Types ====================
 
 export interface User {
   id: string
   email: string
-  name: string
+  name: string | null // Name is optional
+  subscriptionTier: SubscriptionTier
   createdAt: Date
   updatedAt: Date
 }
@@ -21,6 +30,24 @@ export interface UserCredentials {
 export interface AuthTokens {
   accessToken: string
   refreshToken?: string
+}
+
+// ==================== Auth Request/Response Types ====================
+
+export interface SignupRequest {
+  email: string
+  password: string
+  name?: string
+}
+
+export interface LoginRequest {
+  email: string
+  password: string
+}
+
+export interface AuthResponse {
+  token: string
+  user: Omit<User, 'password'> // User without password field
 }
 
 // ==================== AI Agent Types ====================
