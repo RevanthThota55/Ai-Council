@@ -47,9 +47,41 @@ cp .env.example .env
 # Edit .env with your PostgreSQL credentials
 npx prisma migrate dev --name init
 
-# Start development servers
+# Start development servers (CHOOSE ONE METHOD):
+
+# Method 1: Using Turbo (starts both frontend + backend)
 cd ../..
 npm run dev
+
+# Method 2: Start individually using npx (RECOMMENDED for testing)
+# Terminal 1 - Backend
+cd apps/api
+npx tsx watch src/index.ts
+
+# Terminal 2 - Frontend
+cd apps/web
+npx next dev -p 3000
+```
+
+### Troubleshooting: "npm error code ENOWORKSPACES"
+
+If you get this error when running `npm run dev` in `apps/web`:
+
+**Cause:** npm workspace limitation with the `config` command
+
+**Solutions:**
+```bash
+# Option 1: Use npx to bypass npm scripts (QUICKEST)
+cd apps/web
+npx next dev -p 3000
+
+# Option 2: Use Turbo from project root
+cd E:\Ai-Council
+npm run dev
+
+# Option 3: Start backend separately
+cd apps/api
+npx tsx watch src/index.ts
 ```
 
 ### Access the Application
