@@ -46,7 +46,7 @@ model User {
   // Relations
   sessions Session[]
   councils Council[] // Phase 3: Active
-  // memories  Memory[]          // Phase 4+
+  memories Memory[] // Phase 4: Active
 
   @@map("users")
 }
@@ -93,6 +93,7 @@ model Council {
   // Relations
   user     User      @relation(fields: [userId], references: [id], onDelete: Cascade)
   messages Message[]
+  memories Memory[] // Phase 4: Memories can be linked to councils
 
   @@index([userId])
   @@index([status])
@@ -120,21 +121,28 @@ model Message {
   @@map("messages")
 }
 
-// ==================== Future Models (Phase 4+) ====================
+// ==================== Shared Memory System (Phase 4) ====================
 
-// model Memory {
-//   id        String   @id @default(uuid())
-//   userId    String
-//   sessionId String
-//   content   String   @db.Text
-//   embedding Json     // Vector embedding
-//   metadata  Json     // Additional metadata
-//   createdAt DateTime @default(now())
-//
-//   user User @relation(fields: [userId], references: [id], onDelete: Cascade)
-//
-//   @@map("memories")
-// }
+model Memory {
+  id         String   @id @default(uuid())
+  userId     String   // 🔒 SECURITY: CRITICAL - Always filter by this!
+  councilId  String?  // Optional: Associate with specific council
+  content    String   @db.Text
+  embedding  Float[]  // pgvector: Vector embedding for similarity search
+  tags       String[] // For categorization and filtering
+  createdAt  DateTime @default(now())
+  updatedAt  DateTime @updatedAt
+
+  // Relations - onDelete: Cascade ensures user deletion removes their memories
+  user    User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  council Council? @relation(fields: [councilId], references: [id], onDelete: Cascade)
+
+  // 🔒 SECURITY INDEXES: userId index is CRITICAL for fast, secure lookups
+  @@index([userId]) // Fast filtering - EVERY query must use this!
+  @@index([councilId])
+  @@index([createdAt])
+  @@map("memories")
+}
 
 // ==================== Future Models (Phase 5+) ====================
 

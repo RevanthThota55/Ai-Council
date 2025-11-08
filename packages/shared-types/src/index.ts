@@ -314,3 +314,36 @@ export interface ServerToClientEvents {
   all_agents_responded: (data: { totalResponses: number }) => void
   error: (data: { message: string }) => void
 }
+
+// ==================== Memory Types (Phase 4) ====================
+
+export interface Memory {
+  id: string
+  userId: string
+  councilId: string | null
+  content: string
+  embedding: number[]
+  tags: string[]
+  createdAt: Date
+  updatedAt: Date
+}
+
+export interface CreateMemoryRequest {
+  content: string
+  tags?: string[]
+  councilId?: string
+}
+
+export interface SearchMemoryRequest {
+  query: string
+  limit?: number
+}
+
+export interface MemoryWithSimilarity extends Memory {
+  similarity: number // Cosine similarity score (0-1)
+}
+
+export interface MemoryStatsResponse {
+  totalMemories: number
+  memoriesThisWeek: number
+}

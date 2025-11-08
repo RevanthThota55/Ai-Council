@@ -6,6 +6,7 @@ import { Server } from 'socket.io'
 import authRoutes from './routes/auth.routes'
 import agentRoutes from './routes/agent.routes'
 import councilRoutes from './routes/council.routes'
+import memoryRoutes from './routes/memory.routes'
 import { setupCouncilHandlers } from './socket/council.handlers'
 
 // Load environment variables
@@ -45,6 +46,7 @@ app.get('/health', (_req: Request, res: Response) => {
 app.use('/api/auth', authRoutes)
 app.use('/api/agents', agentRoutes)
 app.use('/api/councils', councilRoutes)
+app.use('/api/memory', memoryRoutes)
 
 // Root endpoint
 app.get('/', (_req: Request, res: Response) => {
@@ -56,6 +58,7 @@ app.get('/', (_req: Request, res: Response) => {
       auth: '/api/auth',
       agents: '/api/agents',
       councils: '/api/councils',
+      memory: '/api/memory',
     },
   })
 })
